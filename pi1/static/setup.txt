@@ -1,0 +1,20 @@
+#
+# Static setup for Data Display Engine plugin
+#
+# $Id: setup.txt 3416 2007-07-11 06:34:28Z fsuter $
+
+plugin.tx_datadisplay_pi1 {
+
+# The baseWrap is a stdWrap that replaces the pi_wrapInBaseClass() call if defined
+
+	baseWrap.wrap = |
+
+# Default basic configuration for displaying data. Used if no other is defined
+
+	configs.default {
+		allWrap.wrap = <table cellpadding="0" cellspacing="0" border="0">|</table>
+		row.wrap = <tr>|</tr>
+		field.wrap = <td>|</td>
+		section = 0
+	}
+}
