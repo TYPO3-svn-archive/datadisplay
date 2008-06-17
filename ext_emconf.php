@@ -12,12 +12,12 @@
 
 $EM_CONF[$_EXTKEY] = array(
 	'title' => 'Data Display Engine',
-	'description' => 'Display data from a Data Query (see extension dataquery) according to some template.',
-	'category' => 'plugin',
+	'description' => 'Display data coming from a Data Provider in the FE, using TypoScript for templating. Acts as a Data Consumer for the Display Controller.',
+	'category' => 'fe',
 	'author' => 'Francois Suter (Cobweb)',
-	'author_email' => 'support@cobweb.ch',
+	'author_email' => 'typo3@cobweb.ch',
 	'shy' => '',
-	'dependencies' => 'cms,dataquery',
+	'dependencies' => '',
 	'conflicts' => '',
 	'priority' => '',
 	'module' => '',
@@ -29,11 +29,9 @@ $EM_CONF[$_EXTKEY] = array(
 	'clearCacheOnLoad' => 0,
 	'lockType' => '',
 	'author_company' => '',
-	'version' => '0.2.2',
+	'version' => '0.3.0',
 	'constraints' => array(
 		'depends' => array(
-			'cms' => '',
-			'dataquery' => '',
 		),
 		'conflicts' => array(
 		),

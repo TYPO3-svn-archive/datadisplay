@@ -6,16 +6,16 @@
 	</meta>
 	<data type="array">
 		<languageKey index="default" type="array">
-			<label index="tt_content.CType_pi1">Data Displayer</label>
-			<label index="tt_content.tx_datadisplay_tx_datadisplay_query">Data Query</label>
-			<label index="tt_content.tx_datadisplay_tx_datadisplay_template">Template</label>
-			<label index="tt_content.tx_datadisplay_tx_datadisplay_options">Options</label>
+			<label index="tx_datadisplay_displays">Data Displayer</label>
+			<label index="tx_datadisplay_displays.title">Title</label>
+			<label index="tx_datadisplay_displays.description">Description</label>
+			<label index="tx_datadisplay_displays.typoscript">Local TypoScript</label>
 		</languageKey>
 		<languageKey index="fr" type="array">
-			<label index="tt_content.CType_pi1">Afficheur de données</label>
-			<label index="tt_content.tx_datadisplay_tx_datadisplay_query">Requête</label>
-			<label index="tt_content.tx_datadisplay_tx_datadisplay_template">Modèle</label>
-			<label index="tt_content.tx_datadisplay_tx_datadisplay_options">Options</label>
+			<label index="tx_datadisplay_displays">Afficheur de données</label>
+			<label index="tx_datadisplay_displays.title">Titre</label>
+			<label index="tx_datadisplay_displays.description">Description</label>
+			<label index="tx_datadisplay_displays.typoscript">TypoScript local</label>
 		</languageKey>
 	</data>
 </T3locallang>
