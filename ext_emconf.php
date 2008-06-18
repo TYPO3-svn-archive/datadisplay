@@ -32,6 +32,7 @@ $EM_CONF[$_EXTKEY] = array(
 	'version' => '0.3.0',
 	'constraints' => array(
 		'depends' => array(
+			'displaycontroller' => '',
 		),
 		'conflicts' => array(
 		),

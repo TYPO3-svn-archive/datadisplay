@@ -34,5 +34,5 @@ $TCA['tt_content']['columns']['tx_displaycontroller_consumer']['config']['allowe
 
 // Add static TypoScript
 
-t3lib_extMgm::addStaticFile($_EXTKEY,'pi1/static/','Data display engine');
+t3lib_extMgm::addStaticFile($_EXTKEY,'static/','Data display engine');
 ?>

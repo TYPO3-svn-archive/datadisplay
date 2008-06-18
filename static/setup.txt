@@ -3,7 +3,7 @@
 #
 # $Id: setup.txt 3416 2007-07-11 06:34:28Z fsuter $
 
-plugin.tx_datadisplay_pi1 {
+plugin.tx_datadisplay {
 
 # The baseWrap is a stdWrap that replaces the pi_wrapInBaseClass() call if defined
 
