@@ -5,10 +5,6 @@
 
 plugin.tx_datadisplay {
 
-# The baseWrap is a stdWrap that replaces the pi_wrapInBaseClass() call if defined
-
-	baseWrap.wrap = |
-
 # Default basic configuration for displaying data. Used if no other is defined
 
 	configs.default {

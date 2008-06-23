@@ -24,8 +24,9 @@
 * $Id: class.tx_datadisplay_pi1.php 3938 2008-06-04 08:39:01Z fsuter $
 ***************************************************************/
 
-require_once(PATH_tslib.'class.tslib_pibase.php');
-require_once(t3lib_extMgm::extPath('dataquery','class.tx_dataquery_wrapper.php'));
+//require_once(PATH_tslib.'class.tslib_pibase.php');
+//require_once(t3lib_extMgm::extPath('dataquery','class.tx_dataquery_wrapper.php'));
+require_once(t3lib_extMgm::extPath('basecontroller', 'services/class.tx_basecontroller_consumerbase.php'));
 
 /**
  * Plugin 'Data Displayer' for the 'datadisplay' extension.
@@ -34,94 +35,169 @@ require_once(t3lib_extMgm::extPath('dataquery','class.tx_dataquery_wrapper.php')
  * @package	TYPO3
  * @subpackage	tx_datadisplay
  */
-class tx_datadisplay_pi1 extends tslib_pibase {
-	var $prefixId      = 'tx_datadisplay_pi1';		// Same as class name
-	var $scriptRelPath = 'pi1/class.tx_datadisplay_pi1.php';	// Path to this script relative to the extension dir.
-	var $extKey        = 'datadisplay';	// The extension key.
-	var $pi_checkCHash = true;
-	var $localconf;
-	static $currentIndex = 0;
-	static $data;
+class tx_datadisplay extends tx_basecontroller_consumerbase {
+
+	public $tsKey        = 'tx_datadisplay';	// The key to find the TypoScript in "plugin."
+	protected $conf;
+	protected $table; // Name of the table where the details about the data display are stored
+	protected $uid; // Primary key of the record to fetch for the details
+	protected static $structure = array(); // Input standardised data structure
+	protected $result; // The result of the processing by the Data Consumer
+	protected static $currentIndex = 0;
 
 	/**
-	 * This method performs general intialisation tasks
+	 * This method can be called when displaying a nested table inside the data structure
+	 * It avoids the overhead of the full initialisation
 	 *
-	 * @param	array		The TS configuration of the plugin
-	 *
-	 * @return	void
+	 * @return	string	The HTML content to display
 	 */
-	function init($conf) {
-		$this->localconf = $conf;
-		if (!empty($this->cObj->data['tx_datadisplay_tx_datadisplay_options'])) $this->pi_initPIflexForm('tx_datadisplay_tx_datadisplay_options');
+	function getSubResult() {
+//t3lib_div::debug($this->conf);
+		$subContent = '';
+		$subConfig = $this->getConfigForTable($this->conf['name']);
+//t3lib_div::debug($subConfig);
+		$limit = (isset($subConfig['limit'])) ? $subConfig['limit'] : 0;
+			// Look for the correct subtable
+		if (isset(self::$structure['records'][self::$currentIndex]['sds:subtables'])) {
+			foreach (self::$structure['records'][self::$currentIndex]['sds:subtables'] as $subtableData) {
+				if ($subtableData['name'] == $this->conf['name']) {
+					$theSubtable = $subtableData['records'];
+					break;
+				}
+			}
+		}
+			// Instantiate content object
+		$localCObj = t3lib_div::makeInstance('tslib_cObj');
+			// Render the subtable data, if defined
+		if (isset($theSubtable)) {
+//t3lib_div::debug($theSubtable);
+			$counter = 0;
+			$hasFieldConfig = (isset($subConfig['field.'])) ? true : false;
+			foreach ($theSubtable as $record) {
+				$localCObj->start($record);
+				$subrowContent = '';
+
+// If there's a generic configuration for the fields, loop on all fields and apply configuration to each
+
+				if ($hasFieldConfig) {
+					foreach ($record as $field) {
+						if ($field == 'section_count') continue; // Ignore special section count field
+						$subrowContent .= $localCObj->stdWrap($field, $subConfig['field.']);
+					}
+				}
+				$subContent .= $localCObj->stdWrap($subrowContent, $subConfig['row.']);
+				$counter++;
+				if ($limit > 0 && $counter >= $limit) break;
+			}
+		}
+
+// Apply global stdWrap
+
+		$subContent = $localCObj->stdWrap($subContent, $subConfig['allWrap.']);
+		return $subContent;
 	}
 
 	/**
-	 * The main method of the PlugIn
+	 * This method checks whether a config exists for a given table name
+	 * If yes, it returns that config, if not it returns the default one
 	 *
-	 * @param	string		$content: The PlugIn content
-	 * @param	array		$conf: The PlugIn configuration
+	 * @param	string	table name
 	 *
-	 * @return	The content that is displayed on the website
+	 * @return	array	TS configuration for the rendering of the table
 	 */
-	function main($content,$conf) {
-//t3lib_div::debug($conf);
-		$this->init($conf);
+	function getConfigForTable($tableName) {
+		if (isset($this->conf['configs.'][$tableName.'.'])) {
+			return $this->conf['configs.'][$tableName.'.'];
+		}
+		elseif (isset($this->conf['configs.']['default.'])) {
+			return $this->conf['configs.']['default.'];
+		}
+		else { // Default configuration shouldn't be missing really. Bad boy! TODO: issue error message
+			return array();
+		}
+	}
 
-// Get the flexform values
+	/**
+	 * This method is used to pass a TypoScript configuration (in array form) to the Data Consumer
+	 *
+	 * @param	array	$conf: TypoScript configuration for the extension
+	 */
+	public function setTypoScript($conf) {
+		$this->conf = $conf;
+	}
 
-		if (empty($this->cObj->data['tx_datadisplay_tx_datadisplay_options'])) {
-			$useSearch = 0;
-			$displayIfNoSearch = 0;
+// Data Consumer interface methods
+
+	/**
+	 * This method returns the type of data structure that the Data Consumer can use
+	 *
+	 * @return	string	type of used data structures
+	 */
+	public function getAcceptedDataStructure() {
+		return tx_basecontroller::$recordsetStructureType;
+	}
+
+	/**
+	 * This method indicates whether the Data Consumer can use the type of data structure requested or not
+	 *
+	 * @param	string		$type: type of data structure
+	 * @return	boolean		true if it can use the requested type, false otherwise
+	 */
+	public function acceptsDataStructure($type) {
+		return $type == tx_basecontroller::$recordsetStructureType;
+	}
+
+	/**
+	 * This method is used to load the details about the Data Consumer passing it whatever data it needs
+	 * This will generally be a table name and a primary key value
+	 *
+	 * @param	array	$data: Data for the Data Consumer
+	 * @return	void
+	 */
+	public function loadConsumerData($data) {
+		$this->table = $data['table'];
+		$this->uid = $data['uid'];
+	}
+
+	/**
+	 * This method is used to pass a data structure to the Data Consumer
+	 *
+	 * @param 	array	$structure: standardised data structure
+	 * @return	void
+	 */
+	public function setDataStructure($structure) {
+		self::$structure = $structure;
+	}
+
+	/**
+	 * This method starts whatever rendering process the Data Consumer is programmed to do
+	 *
+	 * @return	void
+	 */
+	public function startProcess() {
+			// Get record where the details of the data display are stored
+		$tableTCA = $GLOBALS['TCA'][$this->table];
+		$whereClause = "uid = '".$this->uid."'";
+		$whereClause .= $GLOBALS['TSFE']->sys_page->enableFields($this->table, $GLOBALS['TSFE']->showHiddenRecords);
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', $this->table, $whereClause);
+		if ($GLOBALS['TYPO3_DB']->sql_num_rows($res) == 0) {
+			return false;
 		}
 		else {
-	    	$useSearch = $this->pi_getFFvalue($this->cObj->data['tx_datadisplay_tx_datadisplay_options'], 'use_search', 'sDEF');
-	    	$displayIfNoSearch = $this->pi_getFFvalue($this->cObj->data['tx_datadisplay_tx_datadisplay_options'], 'if_no_search', 'sDEF');
-		}
+			$this->result = '';
 
-// Get the query to be called
+// Get the name and configuration for the main table
 
-		$dataQuery = $this->cObj->data['tx_datadisplay_tx_datadisplay_query'];
-		if (empty($dataQuery)) {
-		}
-		else {
+			$maintableConf = $this->getConfigForTable(self::$structure['name']);
 
 // Set general display flag
 // May be set to false on some conditions
 
 			$display = true;
 
-// Get search parameters, if any
-
-			if (isset($this->piVars['search']) && $useSearch == 1) { // but only if useSearch flag is set
-				$searchParameters = $this->piVars['search'];
-			}
-			else {
-				$searchParameters = array();
-
-// If there's no search parameters, but the element is supposed to use those parameters
-// define what to display depending on the displayIfNoSearch flag (value is either 'all' or 'none')
-
-				if ($useSearch == 1 && $displayIfNoSearch == 'none') {
-					$display = false;
-				}
-			}
-
 // Continue only if display is true
 
 			if ($display) {
-
-// Get the data using standardised Data Query object
-
-				$dataQueryWrapper = t3lib_div::makeInstance('tx_dataquery_wrapper');
-				$data = $dataQueryWrapper->getData($dataQuery, $searchParameters);
-				self::$data = $data;
-//t3lib_div::debug($data);
-
-// Get the name and configuration for the main table
-
-				$maintableName = $dataQueryWrapper->getMainTableName();
-				$maintableConf = $this->getConfigForTable($maintableName);
-//t3lib_div::debug($maintableConf);
 
 // Display the data
 // First set some flags depending on TS template
@@ -138,7 +214,7 @@ class tx_datadisplay_pi1 extends tslib_pibase {
 				$sectionCount = 1;
 				$localCObj = t3lib_div::makeInstance('tslib_cObj');
 
-				foreach ($data['records'] as $index => $record) {
+				foreach (self::$structure['records'] as $index => $record) {
 					$record['section_count'] = $sectionCount;
 					self::$currentIndex = $index;
 
@@ -158,8 +234,8 @@ class tx_datadisplay_pi1 extends tslib_pibase {
 // Wrap content from previous section
 // Then add section header
 
-							if ($sectionCount > 1) $localContent .= $localCObj->stdWrap($sectionContent,$maintableConf['section.']['content.']);
-							$localContent .= $localCObj->stdWrap($newSectionValue,$maintableConf['section.']['header.']);
+							if ($sectionCount > 1) $localContent .= $localCObj->stdWrap($sectionContent, $maintableConf['section.']['content.']);
+							$localContent .= $localCObj->stdWrap($newSectionValue, $maintableConf['section.']['header.']);
 
 // Switch section value, reinitialise section content and increase section count
 
@@ -175,13 +251,13 @@ class tx_datadisplay_pi1 extends tslib_pibase {
 					if ($hasFieldConfig) {
 						foreach ($record as $field) {
 							if ($field == 'section_count') continue; // Ignore special section count field
-							$rowContent .= $localCObj->stdWrap($field,$maintableConf['field.']);
+							$rowContent .= $localCObj->stdWrap($field, $maintableConf['field.']);
 						}
 					}
 
 // Apply stdWrap to the row (i.e. data record)
 
-					$sectionContent .= $localCObj->stdWrap($rowContent,$maintableConf['row.']);
+					$sectionContent .= $localCObj->stdWrap($rowContent, $maintableConf['row.']);
 				}
 
 // If sections were not activated, just take the result from the loop
@@ -191,90 +267,28 @@ class tx_datadisplay_pi1 extends tslib_pibase {
 					$localContent = $sectionContent;
 				}
 				else {
-					$localContent .= $localCObj->stdWrap($sectionContent,$maintableConf['section.']['content.']);
+					$localContent .= $localCObj->stdWrap($sectionContent, $maintableConf['section.']['content.']);
 				}
 
 // Apply global stdWrap
 
-				$content .= $localCObj->stdWrap($localContent,$maintableConf['allWrap.']);
+				$content .= $localCObj->stdWrap($localContent, $maintableConf['allWrap.']);
 			}
 			else {
 				$content = '';
 			}
+
+			$this->result .= $content;
 		}
-
-// Wrap the whole result, with baseWrap if defined, else with standard pi_wrapInBaseClass() call
-
-		if (isset($this->localconf['baseWrap.'])) {
-			return $this->cObj->stdWrap($content,$this->localconf['baseWrap.']);
-		}
-		else {
-			return $this->pi_wrapInBaseClass($content);
-		}
-	}
-
-	function sub($content, $conf) {
-		$this->init($conf);
-//t3lib_div::debug($conf);
-		$subContent = '';
-		$subConfig = $this->getConfigForTable($conf['name']);
-//t3lib_div::debug($subConfig);
-		$limit = (isset($subConfig['limit'])) ? $subConfig['limit'] : 0;
-		if (isset(self::$data['records'][self::$currentIndex]['subtables'])) {
-			foreach (self::$data['records'][self::$currentIndex]['subtables'] as $subtableData) {
-				if ($subtableData['name'] == $conf['name']) {
-					$theSubtable = $subtableData['records'];
-					break;
-				}
-			}
-		}
-		if (isset($theSubtable)) {
-//t3lib_div::debug($theSubtable);
-			$localCObj = t3lib_div::makeInstance('tslib_cObj');
-			$counter = 0;
-			$hasFieldConfig = (isset($subConfig['field.'])) ? true : false;
-			foreach ($theSubtable as $record) {
-				$localCObj->start($record);
-				$subrowContent = '';
-
-// If there's a generic configuration for the fields, loop on all fields and apply configuration to each
-
-				if ($hasFieldConfig) {
-					foreach ($record as $field) {
-						if ($field == 'section_count') continue; // Ignore special section count field
-						$subrowContent .= $localCObj->stdWrap($field, $subConfig['field.']);
-					}
-				}
-				$subContent .= $localCObj->stdWrap($subrowContent, $subConfig['row.']);
-				$counter++;
-				if ($limit > 0 && $counter >= $limit) break;
-			}
-
-// Apply global stdWrap
-
-			$subContent = $localCObj->stdWrap($subContent, $subConfig['allWrap.']);
-		}
-		return $subContent;
 	}
 
 	/**
-	 * This method checks whether a config exists for a given table name
-	 * If yes, it returns that config, if not it returns the default one
+	 * This method returns the result of the work done by the Data Consumer (FE output or whatever else)
 	 *
-	 * @param	string	table name
-	 *
-	 * @return	array	TS configuration for the rendering of the table
+	 * @return	mixed	the result of the Data Consumer's work
 	 */
-	function getConfigForTable($tableName) {
-		if (isset($this->localconf['configs.'][$tableName.'.'])) {
-			return $this->localconf['configs.'][$tableName.'.'];
-		}
-		elseif (isset($this->localconf['configs.']['default.'])) {
-			return $this->localconf['configs.']['default.'];
-		}
-		else { // Default configuration shouldn't be missing really. Bad boy! TODO: issue error message
-			return array();
-		}
+	public function getResult() {
+		return $this->result;
 	}
 }
 
