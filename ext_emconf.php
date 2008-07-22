@@ -11,7 +11,7 @@
 ########################################################################
 
 $EM_CONF[$_EXTKEY] = array(
-	'title' => 'Data Display Engine',
+	'title' => 'Data Display Engine (Data Consumer)',
 	'description' => 'Display data coming from a Data Provider in the FE, using TypoScript for templating. Acts as a Data Consumer for the Display Controller.',
 	'category' => 'fe',
 	'author' => 'Francois Suter (Cobweb)',

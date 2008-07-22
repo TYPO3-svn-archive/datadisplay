@@ -167,6 +167,7 @@ class tx_datadisplay extends tx_basecontroller_consumerbase {
 	 */
 	public function setDataStructure($structure) {
 		self::$structure = $structure;
+t3lib_div::devLog('Received Data Structure', 'datadisplay', 0, $structure);
 	}
 
 	/**
