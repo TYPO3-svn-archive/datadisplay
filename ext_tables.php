@@ -27,7 +27,7 @@ $TCA['tx_datadisplay_displays'] = array (
 	)
 );
 
-// Register datadisplay as a Data Consumer
+// Register datadisplay with the Display Controller as a Data Consumer
 
 t3lib_div::loadTCA('tt_content');
 $TCA['tt_content']['columns']['tx_displaycontroller_consumer']['config']['allowed'] .= ',tx_datadisplay_displays';
