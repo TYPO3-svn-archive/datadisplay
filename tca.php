@@ -8,7 +8,7 @@ $TCA['tx_datadisplay_displays'] = array(
 	),
 	'feInterface' => $TCA['tx_datadisplay_displays']['feInterface'],
 	'columns' => array(
-		't3ver_label' => array(		
+		't3ver_label' => array(
 			'label'  => 'LLL:EXT:lang/locallang_general.xml:LGL.versionLabel',
 			'config' => array(
 				'type' => 'input',
@@ -16,7 +16,7 @@ $TCA['tx_datadisplay_displays'] = array(
 				'max'  => '30',
 			)
 		),
-		'hidden' => array(		
+		'hidden' => array(
 			'exclude' => 1,
 			'label'   => 'LLL:EXT:lang/locallang_general.xml:LGL.hidden',
 			'config'  => array(
@@ -24,30 +24,30 @@ $TCA['tx_datadisplay_displays'] = array(
 				'default' => '0'
 			)
 		),
-		'title' => array(		
-			'exclude' => 0,		
-			'label' => 'LLL:EXT:datadisplay/locallang_db.xml:tx_datadisplay_displays.title',		
+		'title' => array(
+			'exclude' => 0,
+			'label' => 'LLL:EXT:datadisplay/locallang_db.xml:tx_datadisplay_displays.title',
 			'config' => array(
-				'type' => 'input',	
-				'size' => '30',	
+				'type' => 'input',
+				'size' => '30',
 				'eval' => 'required,trim',
 			)
 		),
-		'description' => array(		
-			'exclude' => 0,		
-			'label' => 'LLL:EXT:datadisplay/locallang_db.xml:tx_datadisplay_displays.description',		
+		'description' => array(
+			'exclude' => 0,
+			'label' => 'LLL:EXT:datadisplay/locallang_db.xml:tx_datadisplay_displays.description',
 			'config' => array(
 				'type' => 'text',
-				'cols' => '30',	
+				'cols' => '30',
 				'rows' => '4',
 			)
 		),
-		'typoscript' => array(		
-			'exclude' => 0,		
-			'label' => 'LLL:EXT:datadisplay/locallang_db.xml:tx_datadisplay_displays.typoscript',		
+		'typoscript' => array(
+			'exclude' => 0,
+			'label' => 'LLL:EXT:datadisplay/locallang_db.xml:tx_datadisplay_displays.typoscript',
 			'config' => array(
 				'type' => 'text',
-				'cols' => '30',	
+				'cols' => '30',
 				'rows' => '4',
 			)
 		),

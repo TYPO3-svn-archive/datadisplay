@@ -295,8 +295,8 @@ t3lib_div::devLog('Received Data Structure', 'datadisplay', 0, $structure);
 
 
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/datadisplay/pi1/class.tx_datadisplay_pi1.php'])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/datadisplay/pi1/class.tx_datadisplay_pi1.php']);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/datadisplay/class.tx_datadisplay.php'])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/datadisplay/class.tx_datadisplay.php']);
 }
 
 ?>

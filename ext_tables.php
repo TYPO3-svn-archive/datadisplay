@@ -7,16 +7,16 @@ t3lib_extMgm::allowTableOnStandardPages('tx_datadisplay_displays');
 
 $TCA['tx_datadisplay_displays'] = array (
 	'ctrl' => array (
-		'title'     => 'LLL:EXT:datadisplay/locallang_db.xml:tx_datadisplay_displays',		
-		'label'     => 'title',	
+		'title'     => 'LLL:EXT:datadisplay/locallang_db.xml:tx_datadisplay_displays',
+		'label'     => 'title',
 		'tstamp'    => 'tstamp',
 		'crdate'    => 'crdate',
 		'cruser_id' => 'cruser_id',
-		'versioningWS' => TRUE, 
+		'versioningWS' => TRUE,
 		'origUid' => 't3_origuid',
-		'default_sortby' => 'ORDER BY title',	
-		'delete' => 'deleted',	
-		'enablecolumns' => array (		
+		'default_sortby' => 'ORDER BY title',
+		'delete' => 'deleted',
+		'enablecolumns' => array (
 			'disabled' => 'hidden',
 		),
 		'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY).'tca.php',
