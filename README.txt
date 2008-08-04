@@ -36,10 +36,10 @@ plugin.tx_datadisplay_pi1 {
 		row.cObject = COA
 		row.cObject {
 			10 = TEXT
-			10.value = my_field_1
+			10.field = my_field_1
 			10.wrap = <td>|</td>
 			20 = TEXT
-			20.value = my_field_2
+			20.field = my_field_2
 			20.wrap = <td>|</td>
 			wrap = <tr>|</tr>
 		}
@@ -55,10 +55,10 @@ plugin.tx_datadisplay_pi1 {
 		row.cObject = COA
 		row.cObject {
 			10 = TEXT
-			10.value = my_field_1
+			10.field = my_field_1
 			10.wrap = <td>|</td>
 			20 = TEXT
-			20.value = my_field_2
+			20.field = my_field_2
 			20.wrap = <td>|</td>
 			wrap = <tr>|</tr>
 			30 < plugin.tx_datadisplay_pi1

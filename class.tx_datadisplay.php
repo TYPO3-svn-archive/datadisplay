@@ -215,13 +215,28 @@ t3lib_div::devLog('Received Data Structure', 'datadisplay', 0, $structure);
 				$sectionCount = 1;
 				$localCObj = t3lib_div::makeInstance('tslib_cObj');
 
+// Extract list of localised field names from the structure
+
+				$fieldNames = array();
+				foreach (self::$structure['header'] as $key => $fieldData) {
+					$fieldNames[$key] = $fieldData['label'];
+                }
+					// Store them in GLOBALS array to make them available in TS
+				$GLOBALS['DATADISPLAY'] = array('table' => self::$structure['name'], 'fields' => $fieldNames);
+
+// Render content header, if defined
+
+				if (isset($maintableConf['header.'])) {
+					$localContent .= $localCObj->stdWrap($maintableConf['header'], $maintableConf['header.']);
+                }
 				foreach (self::$structure['records'] as $index => $record) {
-					$record['section_count'] = $sectionCount;
+					$data = $record;
+					$data['section_count'] = $sectionCount;
 					self::$currentIndex = $index;
 
 // Load the local cObj with data from the database
 
-					$localCObj->start($record);
+					$localCObj->start($data);
 
 // If sections are activated, check if a new section has started
 
@@ -265,7 +280,7 @@ t3lib_div::devLog('Received Data Structure', 'datadisplay', 0, $structure);
 // Otherwise apply section content stdWrap to last section
 
 				if (empty($sectionBreak)) {
-					$localContent = $sectionContent;
+					$localContent .= $sectionContent;
 				}
 				else {
 					$localContent .= $localCObj->stdWrap($sectionContent, $maintableConf['section.']['content.']);
