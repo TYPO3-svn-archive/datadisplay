@@ -40,7 +40,7 @@ $addDatadisplayWizard = array(
 						'script' => 'wizard_add.php',
 						'icon' => 'EXT:datadisplay/res/icons/add_datadisplay_wizard.gif',
 						'params' => array(
-								'table' => 'tx_datadatadisplay_displays',
+								'table' => 'tx_datadisplay_displays',
 								'pid' => '###CURRENT_PID###',
 								'setValue' => 'set'
 							)
