@@ -20,7 +20,7 @@ $TCA['tx_datadisplay_displays'] = array (
 			'disabled' => 'hidden',
 		),
 		'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY).'tca.php',
-		'iconfile'          => t3lib_extMgm::extRelPath($_EXTKEY).'icon_tx_datadisplay_displays.gif',
+		'iconfile'          => t3lib_extMgm::extRelPath($_EXTKEY).'res/icons/icon_tx_datadisplay_displays.gif',
 	),
 	'feInterface' => array (
 		'fe_admin_fieldList' => 'hidden, title, description, typoscript ',
@@ -31,6 +31,21 @@ $TCA['tx_datadisplay_displays'] = array (
 
 t3lib_div::loadTCA('tt_content');
 $TCA['tt_content']['columns']['tx_displaycontroller_consumer']['config']['allowed'] .= ',tx_datadisplay_displays';
+
+// Add a wizard for adding a datadisplay
+
+$addDatadisplayWizard = array(
+						'type' => 'script',
+						'title' => 'LLL:EXT:datadisplay/locallang_db.xml:wizards.add_datadisplay',
+						'script' => 'wizard_add.php',
+						'icon' => 'EXT:datadisplay/res/icons/add_datadisplay_wizard.gif',
+						'params' => array(
+								'table' => 'tx_datadatadisplay_displays',
+								'pid' => '###CURRENT_PID###',
+								'setValue' => 'set'
+							)
+						);
+$TCA['tt_content']['columns']['tx_displaycontroller_consumer']['config']['wizards']['add_datadisplay'] = $addDatadisplayWizard;
 
 // Add static TypoScript
 
