@@ -173,7 +173,7 @@ t3lib_div::devLog('Received Data Structure', 'datadisplay', 0, $structure);
 	/**
 	 * This method is used to pass a Data Filter structure to the Data Consumer
 	 *
-	 * @param	DataFilter	$filter: Data Filter structure
+	 * @param	array	$filter: Data Filter structure
 	 * @return	void
 	 */
 	public function setDataFilter($filter) {
