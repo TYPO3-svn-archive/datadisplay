@@ -154,7 +154,7 @@ class tx_datadisplay extends tx_basecontroller_consumerbase {
 	 * @param	array	$data: Data for the Data Consumer
 	 * @return	void
 	 */
-	public function loadConsumerData($data) {
+	public function loadData($data) {
 		$this->table = $data['table'];
 		$this->uid = $data['uid'];
 	}
@@ -168,6 +168,15 @@ class tx_datadisplay extends tx_basecontroller_consumerbase {
 	public function setDataStructure($structure) {
 		self::$structure = $structure;
 t3lib_div::devLog('Received Data Structure', 'datadisplay', 0, $structure);
+	}
+
+	/**
+	 * This method is used to pass a Data Filter structure to the Data Consumer
+	 *
+	 * @param	DataFilter	$filter: Data Filter structure
+	 * @return	void
+	 */
+	public function setDataFilter($filter) {
 	}
 
 	/**
