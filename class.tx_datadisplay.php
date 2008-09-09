@@ -231,7 +231,7 @@ class tx_datadisplay extends tx_basecontroller_consumerbase {
 					$fieldNames[$key] = $fieldData['label'];
                 }
 					// Store them in GLOBALS array to make them available in TS
-				$GLOBALS['DATADISPLAY'] = array('table' => self::$structure['name'], 'fields' => $fieldNames);
+				$GLOBALS['DATADISPLAY'] = array('count' => self::$structure['count'], 'uidList' => self::$structure['uidList'], 'table' => self::$structure['name'], 'fields' => $fieldNames);
 
 // Render content header, if defined
 
