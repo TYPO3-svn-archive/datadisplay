@@ -24,9 +24,7 @@
 * $Id: class.tx_datadisplay_pi1.php 3938 2008-06-04 08:39:01Z fsuter $
 ***************************************************************/
 
-//require_once(PATH_tslib.'class.tslib_pibase.php');
-//require_once(t3lib_extMgm::extPath('dataquery','class.tx_dataquery_wrapper.php'));
-require_once(t3lib_extMgm::extPath('basecontroller', 'services/class.tx_basecontroller_consumerbase.php'));
+require_once(t3lib_extMgm::extPath('basecontroller', 'services/class.tx_basecontroller_feconsumerbase.php'));
 
 /**
  * Plugin 'Data Displayer' for the 'datadisplay' extension.
@@ -35,10 +33,9 @@ require_once(t3lib_extMgm::extPath('basecontroller', 'services/class.tx_basecont
  * @package	TYPO3
  * @subpackage	tx_datadisplay
  */
-class tx_datadisplay extends tx_basecontroller_consumerbase {
+class tx_datadisplay extends tx_basecontroller_feconsumerbase {
 
 	public $tsKey        = 'tx_datadisplay';	// The key to find the TypoScript in "plugin."
-	protected $conf;
 	protected $table; // Name of the table where the details about the data display are stored
 	protected $uid; // Primary key of the record to fetch for the details
 	protected static $structure = array(); // Input standardised data structure
@@ -115,15 +112,6 @@ class tx_datadisplay extends tx_basecontroller_consumerbase {
 		else { // Default configuration shouldn't be missing really. Bad boy! TODO: issue error message
 			return array();
 		}
-	}
-
-	/**
-	 * This method is used to pass a TypoScript configuration (in array form) to the Data Consumer
-	 *
-	 * @param	array	$conf: TypoScript configuration for the extension
-	 */
-	public function setTypoScript($conf) {
-		$this->conf = $conf;
 	}
 
 // Data Consumer interface methods
