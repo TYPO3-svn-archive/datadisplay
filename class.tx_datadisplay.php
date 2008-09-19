@@ -136,18 +136,6 @@ class tx_datadisplay extends tx_basecontroller_feconsumerbase {
 	}
 
 	/**
-	 * This method is used to load the details about the Data Consumer passing it whatever data it needs
-	 * This will generally be a table name and a primary key value
-	 *
-	 * @param	array	$data: Data for the Data Consumer
-	 * @return	void
-	 */
-	public function loadData($data) {
-		$this->table = $data['table'];
-		$this->uid = $data['uid'];
-	}
-
-	/**
 	 * This method is used to pass a data structure to the Data Consumer
 	 *
 	 * @param 	array	$structure: standardised data structure
@@ -173,126 +161,116 @@ class tx_datadisplay extends tx_basecontroller_feconsumerbase {
 	 * @return	void
 	 */
 	public function startProcess() {
-			// Get record where the details of the data display are stored
-		$tableTCA = $GLOBALS['TCA'][$this->table];
-		$whereClause = "uid = '".$this->uid."'";
-		$whereClause .= $GLOBALS['TSFE']->sys_page->enableFields($this->table, $GLOBALS['TSFE']->showHiddenRecords);
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', $this->table, $whereClause);
-		if ($GLOBALS['TYPO3_DB']->sql_num_rows($res) == 0) {
-			return false;
-		}
-		else {
-			$this->result = '';
+		$this->result = '';
 
 // Get the name and configuration for the main table
 
-			$maintableConf = $this->getConfigForTable(self::$structure['name']);
+		$maintableConf = $this->getConfigForTable(self::$structure['name']);
 
 // Set general display flag
 // May be set to false on some conditions
 
-			$display = true;
+		$display = true;
 
 // Continue only if display is true
 
-			if ($display) {
+		if ($display) {
 
 // Display the data
 // First set some flags depending on TS template
 
-				$hasFieldConfig = (isset($maintableConf['field.'])) ? true : false;
-				$sectionBreak = (empty($maintableConf['section'])) ? '' : $maintableConf['section.']['field'];
+			$hasFieldConfig = (isset($maintableConf['field.'])) ? true : false;
+			$sectionBreak = (empty($maintableConf['section'])) ? '' : $maintableConf['section.']['field'];
 
 // Initialise some values
 // Get an instance of tslib_cobj for rendering the data
 
-				$localContent = '';
-				$sectionContent = '';
-				$oldSectionValue = '';
-				$sectionCount = 1;
-				$localCObj = t3lib_div::makeInstance('tslib_cObj');
+			$localContent = '';
+			$sectionContent = '';
+			$oldSectionValue = '';
+			$sectionCount = 1;
+			$localCObj = t3lib_div::makeInstance('tslib_cObj');
 
 // Extract list of localised field names from the structure
 
-				$fieldNames = array();
-				foreach (self::$structure['header'] as $key => $fieldData) {
-					$fieldNames[$key] = $fieldData['label'];
-                }
-					// Store them in GLOBALS array to make them available in TS
-				$GLOBALS['DATADISPLAY'] = array('count' => self::$structure['count'], 'uidList' => self::$structure['uidList'], 'table' => self::$structure['name'], 'fields' => $fieldNames);
+			$fieldNames = array();
+			foreach (self::$structure['header'] as $key => $fieldData) {
+				$fieldNames[$key] = $fieldData['label'];
+            }
+				// Store them in GLOBALS array to make them available in TS
+			$GLOBALS['DATADISPLAY'] = array('count' => self::$structure['count'], 'uidList' => self::$structure['uidList'], 'table' => self::$structure['name'], 'fields' => $fieldNames);
 
 // Render content header, if defined
 
-				if (isset($maintableConf['header.'])) {
-					$localContent .= $localCObj->stdWrap($maintableConf['header'], $maintableConf['header.']);
-                }
-				foreach (self::$structure['records'] as $index => $record) {
-					$data = $record;
-					$data['section_count'] = $sectionCount;
-					self::$currentIndex = $index;
+			if (isset($maintableConf['header.'])) {
+				$localContent .= $localCObj->stdWrap($maintableConf['header'], $maintableConf['header.']);
+            }
+			foreach (self::$structure['records'] as $index => $record) {
+				$data = $record;
+				$data['section_count'] = $sectionCount;
+				self::$currentIndex = $index;
 
 // Load the local cObj with data from the database
 
-					$localCObj->start($data);
+				$localCObj->start($data);
 
 // If sections are activated, check if a new section has started
 
-					if (!empty($sectionBreak)) {
-						$newSectionValue = $record[$sectionBreak];
+				if (!empty($sectionBreak)) {
+					$newSectionValue = $record[$sectionBreak];
 
 // New section
 
-						if ($newSectionValue != $oldSectionValue) {
+					if ($newSectionValue != $oldSectionValue) {
 
 // Wrap content from previous section
 // Then add section header
 
-							if ($sectionCount > 1) $localContent .= $localCObj->stdWrap($sectionContent, $maintableConf['section.']['content.']);
-							$localContent .= $localCObj->stdWrap($newSectionValue, $maintableConf['section.']['header.']);
+						if ($sectionCount > 1) $localContent .= $localCObj->stdWrap($sectionContent, $maintableConf['section.']['content.']);
+						$localContent .= $localCObj->stdWrap($newSectionValue, $maintableConf['section.']['header.']);
 
 // Switch section value, reinitialise section content and increase section count
 
-							$oldSectionValue = $newSectionValue;
-							$sectionContent = '';
-							$sectionCount++;
-						}
+						$oldSectionValue = $newSectionValue;
+						$sectionContent = '';
+						$sectionCount++;
 					}
-					$rowContent = '';
+				}
+				$rowContent = '';
 
 // If there's a generic configuration for the fields, loop on all fields and apply configuration to each
 
-					if ($hasFieldConfig) {
-						foreach ($record as $field) {
-							if ($field == 'section_count') continue; // Ignore special section count field
-							$rowContent .= $localCObj->stdWrap($field, $maintableConf['field.']);
-						}
+				if ($hasFieldConfig) {
+					foreach ($record as $field) {
+						if ($field == 'section_count') continue; // Ignore special section count field
+						$rowContent .= $localCObj->stdWrap($field, $maintableConf['field.']);
 					}
+				}
 
 // Apply stdWrap to the row (i.e. data record)
 
-					$sectionContent .= $localCObj->stdWrap($rowContent, $maintableConf['row.']);
-				}
+				$sectionContent .= $localCObj->stdWrap($rowContent, $maintableConf['row.']);
+			}
 
 // If sections were not activated, just take the result from the loop
 // Otherwise apply section content stdWrap to last section
 
-				if (empty($sectionBreak)) {
-					$localContent .= $sectionContent;
-				}
-				else {
-					$localContent .= $localCObj->stdWrap($sectionContent, $maintableConf['section.']['content.']);
-				}
+			if (empty($sectionBreak)) {
+				$localContent .= $sectionContent;
+			}
+			else {
+				$localContent .= $localCObj->stdWrap($sectionContent, $maintableConf['section.']['content.']);
+			}
 
 // Apply global stdWrap
 
-				$content .= $localCObj->stdWrap($localContent, $maintableConf['allWrap.']);
-			}
-			else {
-				$content = '';
-			}
-
-			$this->result .= $content;
+			$content .= $localCObj->stdWrap($localContent, $maintableConf['allWrap.']);
 		}
+		else {
+			$content = '';
+		}
+
+		$this->result .= $content;
 	}
 
 	/**
