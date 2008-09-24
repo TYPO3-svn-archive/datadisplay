@@ -4,6 +4,7 @@
 # $Id: setup.txt 3416 2007-07-11 06:34:28Z fsuter $
 
 plugin.tx_datadisplay {
+	errorWrap.wrap = <p><strong>|</strong></p>
 
 # Default basic configuration for displaying data. Used if no other is defined
 

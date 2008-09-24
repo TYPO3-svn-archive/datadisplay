@@ -275,10 +275,15 @@ class tx_datadisplay extends tx_basecontroller_feconsumerbase {
 
 	/**
 	 * This method returns the result of the work done by the Data Consumer (FE output or whatever else)
+	 * or displays an error message if no structure was set
 	 *
 	 * @return	mixed	the result of the Data Consumer's work
 	 */
 	public function getResult() {
+			// If no structure were loaded, produce some error output
+		if (count(self::$structure) == 0) {
+			$this->result = $this->pObj->cObj->stdWrap('No records found', $this->conf['errorWrap.']);
+		}
 		return $this->result;
 	}
 }
