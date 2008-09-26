@@ -147,15 +147,6 @@ class tx_datadisplay extends tx_basecontroller_feconsumerbase {
 	}
 
 	/**
-	 * This method is used to pass a Data Filter structure to the Data Consumer
-	 *
-	 * @param	array	$filter: Data Filter structure
-	 * @return	void
-	 */
-	public function setDataFilter($filter) {
-	}
-
-	/**
 	 * This method starts whatever rendering process the Data Consumer is programmed to do
 	 *
 	 * @return	void
